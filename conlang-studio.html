@@ -1,0 +1,1331 @@
+<title>Ateliê de Línguas</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700&family=Gentium+Book+Plus:wght@400;700&family=IBM+Plex+Sans:wght@400;500;600&display=swap">
+<style>
+/* Layout: bancada de trabalho de um linguista. Cabeçalho com o nome da língua, abas, painéis planos separados por filetes. */
+:root{
+  --bg:#EDF0F3; --panel:#F8F9FB; --fg:#131C26; --muted:#566474; --line:#CBD3DC;
+  --accent:#2B3FD1; --accent-ink:#FFFFFF; --soft:#DCE1F6; --warn:#A9480A; --warnbg:#F7E8DC; --ok:#17803D;
+  --font-display:"Bricolage Grotesque","IBM Plex Sans",system-ui,sans-serif;
+  --font-ui:"IBM Plex Sans",system-ui,-apple-system,"Segoe UI",sans-serif;
+  --font-ipa:"Gentium Book Plus","Charis SIL","Noto Serif","Segoe UI",serif;
+}
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme="light"]){
+    --bg:#0F151C; --panel:#161E27; --fg:#E6EBF1; --muted:#93A0AE; --line:#2B3643;
+    --accent:#8F9DFF; --accent-ink:#0F151C; --soft:#212A4C; --warn:#F0A060; --warnbg:#33261B; --ok:#5FCB8A; color-scheme:dark;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#0F151C; --panel:#161E27; --fg:#E6EBF1; --muted:#93A0AE; --line:#2B3643;
+  --accent:#8F9DFF; --accent-ink:#0F151C; --soft:#212A4C; --warn:#F0A060; --warnbg:#33261B; --ok:#5FCB8A; color-scheme:dark;
+}
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--fg);font:15px/1.5 var(--font-ui);padding-inline:16px;padding-block:20px 48px}
+.wrap{max-width:1080px;margin-inline:auto;display:flex;flex-direction:column;gap:20px}
+h1,h2,h3{font-family:var(--font-display);margin:0;text-wrap:balance;letter-spacing:-.01em}
+h2{font-size:1.25rem}
+h3{font-size:.8rem;text-transform:uppercase;letter-spacing:.09em;color:var(--muted);font-family:var(--font-ui);font-weight:600}
+p{margin:0}
+.muted{color:var(--muted)}
+.ipa{font-family:var(--font-ipa);letter-spacing:.02em}
+button,input,select,textarea{font:inherit;color:inherit}
+:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+
+header.top{display:flex;flex-wrap:wrap;gap:12px 20px;align-items:flex-end;justify-content:space-between;border-bottom:1px solid var(--line);padding-bottom:16px}
+.brand{font-size:.78rem;text-transform:uppercase;letter-spacing:.14em;color:var(--muted);font-weight:600}
+#langName{font-family:var(--font-display);font-weight:700;font-size:clamp(1.6rem,5vw,2.4rem);background:transparent;border:0;border-bottom:2px solid transparent;padding:0;width:100%;min-width:0;letter-spacing:-.02em}
+#langName:hover,#langName:focus{border-bottom-color:var(--line);outline:none}
+.title-box{flex:1 1 280px;min-width:0}
+.actions{display:flex;gap:8px;flex-wrap:wrap}
+
+.btn{border:1px solid var(--line);background:var(--panel);border-radius:6px;padding:7px 13px;cursor:pointer;font-weight:500}
+.btn:hover{border-color:var(--accent)}
+.btn.primary{background:var(--accent);color:var(--accent-ink);border-color:var(--accent)}
+.btn.primary:hover{filter:brightness(1.08)}
+.btn.small{padding:4px 9px;font-size:.85rem}
+.btn[disabled]{opacity:.45;cursor:default}
+
+nav.tabs{display:flex;gap:4px;overflow-x:auto;border-bottom:1px solid var(--line)}
+nav.tabs button{background:none;border:0;border-bottom:3px solid transparent;padding:10px 16px;cursor:pointer;font-weight:600;color:var(--muted);white-space:nowrap;margin-bottom:-1px}
+nav.tabs button[aria-selected="true"]{color:var(--fg);border-bottom-color:var(--accent)}
+section.pane[hidden]{display:none!important}
+section.pane{display:flex;flex-direction:column;gap:20px}
+
+.panel{background:var(--panel);border:1px solid var(--line);border-radius:8px;padding:18px;display:flex;flex-direction:column;gap:14px;min-width:0}
+.panel.warnbox{background:var(--warnbg);border-color:var(--warn)}
+.panel.warnbox p{color:var(--fg)}
+.row{display:flex;flex-wrap:wrap;gap:12px 16px;align-items:flex-end}
+.field{display:flex;flex-direction:column;gap:4px;min-width:0}
+.field label,.lbl{font-size:.78rem;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:.07em}
+input[type=text],input[type=number],select,textarea{background:var(--bg);border:1px solid var(--line);border-radius:6px;padding:8px 10px;min-width:0}
+textarea{resize:vertical;width:100%}
+input[type=range]{accent-color:var(--accent);width:100%}
+.base-row{display:flex;gap:10px;align-items:center}
+.base-row input[type=number]{width:84px}
+.base-row input[type=range]{min-width:120px;width:200px}
+.check{display:flex;gap:8px;align-items:flex-start;cursor:pointer}
+.check input{margin-top:4px;accent-color:var(--accent)}
+
+.two{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,320px),1fr));gap:20px}
+.chips{display:flex;flex-wrap:wrap;gap:6px}
+.chip{font-family:var(--font-ipa);font-size:1.2rem;min-width:2.1rem;text-align:center;padding:2px 8px;border:1px solid var(--line);border-radius:5px;background:var(--bg)}
+.chip.coda{border-color:var(--accent);background:var(--soft)}
+.group{display:flex;flex-direction:column;gap:6px}
+.group small{color:var(--muted);font-size:.78rem}
+.stat{display:flex;flex-wrap:wrap;gap:6px 28px}
+.stat div{display:flex;flex-direction:column}
+.stat b{font-family:var(--font-ipa);font-size:1.4rem;font-weight:700;letter-spacing:.04em}
+.stat span{font-size:.75rem;color:var(--muted);text-transform:uppercase;letter-spacing:.07em}
+
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(82px,1fr));gap:8px;max-height:640px;overflow-y:auto;padding:2px}
+.cell{display:flex;flex-direction:column;align-items:center;gap:2px;padding:6px 4px 7px;background:var(--bg);border:1px solid var(--line);border-radius:6px;cursor:pointer;position:relative}
+.cell:hover{border-color:var(--accent)}
+.cell.on{border-color:var(--accent);box-shadow:0 0 0 2px var(--accent) inset}
+.cell.dup,.cell.empty{border-style:dashed;border-color:var(--warn)}
+.cell .dg{position:absolute;top:3px;left:6px;font-size:.7rem;color:var(--muted);font-weight:600}
+.cell .rep{position:absolute;top:3px;right:5px;font-size:.62rem;color:var(--warn);font-weight:600}
+.cell svg{width:46px;height:46px}
+.cell .syl{font-family:var(--font-ipa);font-size:.95rem;max-width:100%;overflow:hidden;text-overflow:ellipsis}
+
+details summary{cursor:pointer;font-weight:600}
+.primes{display:grid;grid-template-columns:repeat(auto-fill,minmax(72px,1fr));gap:4px;margin-top:10px;font-variant-numeric:tabular-nums;max-height:360px;overflow-y:auto}
+.primes span{display:flex;justify-content:space-between;gap:6px;border-bottom:1px dotted var(--line);padding:1px 2px;font-size:.88rem}
+.primes b{font-family:var(--font-ipa)}
+
+.editor{display:grid;grid-template-columns:minmax(0,380px) minmax(0,1fr);gap:20px;align-items:start}
+@media (max-width:760px){.editor{grid-template-columns:minmax(0,1fr)}}
+#pad{width:100%;aspect-ratio:1;background:var(--bg);border:1px solid var(--line);border-radius:8px;touch-action:none;cursor:crosshair;display:block;max-width:100%}
+.guide{stroke:var(--line);stroke-width:.4;fill:none}
+.guide.d{stroke-dasharray:1.5 1.5}
+
+.modes{display:flex;gap:6px;flex-wrap:wrap}
+.modes label{border:1px solid var(--line);border-radius:6px;padding:6px 12px;cursor:pointer;font-weight:500;background:var(--bg)}
+.modes input{position:absolute;opacity:0;pointer-events:none}
+.modes label:has(input:checked){background:var(--accent);color:var(--accent-ink);border-color:var(--accent)}
+.modes label:has(input:focus-visible){outline:2px solid var(--accent);outline-offset:2px}
+.script-box{overflow-x:auto;border:1px dashed var(--line);border-radius:8px;padding:14px;background:var(--bg);color:var(--fg);min-height:90px}
+.script-box svg{display:block;max-width:none}
+.out-line{font-family:var(--font-ipa);font-size:1.15rem;line-height:1.9;overflow-wrap:anywhere}
+.out-line span+span{margin-left:.9em}
+.out-line .pun{color:var(--muted)}
+.digits-line{font-family:ui-monospace,Menlo,Consolas,monospace;font-size:.9rem;overflow-wrap:anywhere;color:var(--muted);white-space:pre-wrap}
+.table-wrap{overflow-x:auto}
+table{border-collapse:collapse;width:100%;font-size:.9rem}
+th{text-align:left;font-size:.75rem;text-transform:uppercase;letter-spacing:.07em;color:var(--muted);padding:6px 10px 6px 0;border-bottom:1px solid var(--line)}
+td{padding:6px 10px 6px 0;border-bottom:1px solid var(--line);vertical-align:top}
+td.num{font-variant-numeric:tabular-nums;max-width:220px;overflow-wrap:anywhere;color:var(--muted)}
+tr.punrow td{color:var(--muted)}
+.note{font-size:.85rem;color:var(--warn)}
+.audio-row{display:flex;flex-wrap:wrap;gap:10px 14px;align-items:flex-end}
+
+.overlay{position:fixed;inset:0;background:rgba(10,15,22,.55);display:flex;align-items:flex-start;justify-content:center;padding:max(16px,env(safe-area-inset-top,0px)) 16px 16px;overflow:auto;z-index:20}
+.overlay[hidden]{display:none!important}
+.modal{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:20px;width:100%;max-width:640px;display:flex;flex-direction:column;gap:14px;margin-top:5vh}
+.modal textarea{min-height:140px;font:12px/1.4 ui-monospace,Menlo,Consolas,monospace}
+.err{color:var(--warn);font-size:.88rem}
+#toast{position:fixed;left:50%;bottom:calc(20px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);background:var(--fg);color:var(--bg);padding:9px 16px;border-radius:6px;font-size:.9rem;opacity:0;pointer-events:none;transition:opacity .2s;max-width:calc(100% - 32px);z-index:30}
+#toast.on{opacity:1}
+@media (prefers-reduced-motion:reduce){#toast{transition:none}}
+</style>
+
+<div class="wrap">
+  <header class="top">
+    <div class="title-box">
+      <div class="brand">Ateliê de Línguas</div>
+      <input id="langName" type="text" aria-label="Nome do idioma" maxlength="60" spellcheck="false">
+    </div>
+    <div class="actions">
+      <button class="btn" id="btnFile" type="button">Arquivo do idioma</button>
+    </div>
+  </header>
+
+  <nav class="tabs" role="tablist">
+    <button role="tab" data-tab="idioma" aria-selected="true">Idioma</button>
+    <button role="tab" data-tab="alfabeto" aria-selected="false">Alfabeto</button>
+    <button role="tab" data-tab="tradutor" aria-selected="false">Tradutor e voz</button>
+  </nav>
+
+  <!-- ===== IDIOMA ===== -->
+  <section class="pane" id="pane-idioma">
+    <div class="panel">
+      <h2>Gerar a partir de uma seed</h2>
+      <p class="muted">A mesma seed e a mesma base sempre produzem o mesmo idioma: a cifra de primos, a fonética, o acento e o alfabeto inicial. Os caracteres que você desenhou são mantidos, inclusive quando a base diminui e depois aumenta de novo.</p>
+      <div class="row">
+        <div class="field" style="flex:1 1 180px"><label for="seed">Seed (número ou texto)</label><input id="seed" type="text" autocomplete="off" spellcheck="false"></div>
+        <div class="field"><label for="baseNum">Base numérica</label>
+          <div class="base-row"><input id="baseNum" type="number" min="2" max="1024"><input id="baseRange" type="range" min="2" max="128" aria-label="Base"></div></div>
+        <button class="btn primary" id="btnGen" type="button">Gerar idioma</button>
+      </div>
+      <p class="muted" style="font-size:.85rem">Sem limite na cifra: o padrão silábico cresce sozinho conforme a base. O teto de 1024 só mantém a interface fluida. Até a base 64 cada dígito já vem com um caractere sugerido e único.</p>
+      <label class="check"><input type="checkbox" id="exact"><span><b>Texto exato</b>: maiúsculas e acentos são letras diferentes, então “Olá” volta como “Olá”. Desligado, tudo vira minúsculo sem acento e as palavras ficam mais curtas.</span></label>
+    </div>
+
+    <div class="panel warnbox" id="baseWarn" hidden></div>
+
+    <div class="two">
+      <div class="panel" id="phonPanel"></div>
+      <div class="panel">
+        <h3>Como o idioma funciona</h3>
+        <ol style="margin:0;padding-left:1.2rem;display:flex;flex-direction:column;gap:6px">
+          <li>Cada letra, número e símbolo recebe um número primo, embaralhado pela seed.</li>
+          <li>Uma palavra vira um único número grande, somando <span class="ipa">primo × M<sup>posição</sup></span>. O fatoramento permite desfazer.</li>
+          <li>Esse número é escrito na base escolhida. Cada dígito é um caractere do alfabeto e uma unidade sonora.</li>
+          <li>As unidades sonoras são reagrupadas em sílabas reais, e a seed define onde cai o acento.</li>
+        </ol>
+        <p class="muted">Bases maiores deixam as palavras mais curtas. Quando a base não cabe no padrão silábico sorteado, o padrão cresce (CV, CVC, CVCV…).</p>
+      </div>
+    </div>
+
+    <div class="panel">
+      <h2>Tabela de dígitos</h2>
+      <p class="muted">Cada dígito com seu caractere e sua unidade sonora. Clique para desenhar o caractere.</p>
+      <div class="grid" id="grid1"></div>
+    </div>
+
+    <div class="panel">
+      <details><summary>Mapa de primos desta seed</summary><div class="primes" id="primes"></div></details>
+    </div>
+  </section>
+
+  <!-- ===== ALFABETO ===== -->
+  <section class="pane" id="pane-alfabeto" hidden>
+    <div class="panel warnbox" id="glyphWarn" hidden></div>
+    <div class="editor">
+      <div class="panel">
+        <h2 id="edTitle"></h2>
+        <svg id="pad" viewBox="0 0 100 100" aria-label="Área de desenho"></svg>
+        <div class="row">
+          <button class="btn small" id="edUndo" type="button">Desfazer traço</button>
+          <button class="btn small" id="edClear" type="button">Limpar</button>
+          <button class="btn small" id="edReset" type="button">Restaurar padrão</button>
+        </div>
+        <div class="row">
+          <button class="btn small" id="edPrev" type="button">← Anterior</button>
+          <button class="btn small" id="edNext" type="button">Próximo →</button>
+          <button class="btn small" id="edIssue" type="button">Próximo repetido ou vazio</button>
+        </div>
+        <div class="field"><label for="stroke">Espessura da caneta (vale para todo o alfabeto)</label><input id="stroke" type="range" min="2" max="11" step="0.5"></div>
+        <p class="muted" id="edHint">Desenhe com o mouse ou o dedo. Um toque simples faz um ponto.</p>
+      </div>
+      <div class="panel">
+        <h2>Todos os caracteres</h2>
+        <div class="grid" id="grid2"></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== TRADUTOR ===== -->
+  <section class="pane" id="pane-tradutor" hidden>
+    <div class="panel">
+      <div class="modes" role="radiogroup" aria-label="Direção">
+        <label><input type="radio" name="mode" value="tx" checked>Texto → idioma</label>
+        <label><input type="radio" name="mode" value="ph">Fonética → texto</label>
+        <label><input type="radio" name="mode" value="dg">Dígitos → texto</label>
+      </div>
+      <div class="field"><label for="src" id="srcLabel">Texto</label>
+        <textarea id="src" rows="3" spellcheck="false">Olá, mundo! Este idioma nasceu de números primos.</textarea></div>
+      <p class="note" id="skipNote" hidden></p>
+      <div id="decodedBox" hidden class="group"><h3>Texto decodificado</h3><p id="decodedText" style="white-space:pre-wrap"></p><p class="err" id="decodeErr"></p></div>
+    </div>
+
+    <div class="panel">
+      <div class="row" style="justify-content:space-between">
+        <h2>Escrita</h2>
+        <div class="row">
+          <div class="field" style="width:150px"><label for="gsize">Tamanho</label><input id="gsize" type="range" min="28" max="120" value="56"></div>
+          <button class="btn small" id="btnSvg" type="button">Baixar SVG</button>
+        </div>
+      </div>
+      <p class="note" id="scriptWarn" hidden></p>
+      <div class="script-box" id="scriptBox"></div>
+    </div>
+
+    <div class="panel">
+      <h2>Fonética</h2>
+      <div class="out-line" id="ipaOut"></div>
+      <p class="muted" style="font-size:.85rem" id="ipaLegend"></p>
+      <h3>Número em base <span id="baseLbl"></span></h3>
+      <div class="digits-line" id="digitsOut"></div>
+      <div class="audio-row">
+        <div class="field"><label for="voice">Voz</label><select id="voice"></select></div>
+        <div class="field" style="width:140px"><label for="tempo">Velocidade</label><input id="tempo" type="range" min="0.6" max="1.5" step="0.05" value="1"></div>
+        <button class="btn primary" id="btnPlay" type="button">Ouvir</button>
+        <button class="btn" id="btnStop" type="button">Parar</button>
+        <button class="btn" id="btnWav" type="button">Baixar áudio (.wav)</button>
+      </div>
+      <p class="muted" style="font-size:.85rem" id="audioNote">Vírgulas, pontos e quebras de linha viram pausas; a entonação cai no fim das frases e sobe nas perguntas. As vozes do idioma usam um sintetizador próprio e determinístico. As vozes do navegador usam uma pronúncia aproximada.</p>
+    </div>
+
+    <div class="panel">
+      <h2>Anatomia das palavras</h2>
+      <div class="table-wrap"><table><thead><tr><th>Palavra</th><th>Número</th><th>Dígitos</th><th>Fonética</th></tr></thead><tbody id="anat"></tbody></table></div>
+    </div>
+  </section>
+</div>
+
+<!-- Arquivo do idioma -->
+<div class="overlay" id="fileDlg" hidden>
+  <div class="modal" role="dialog" aria-label="Arquivo do idioma">
+    <div class="row" style="justify-content:space-between;align-items:center"><h2>Arquivo do idioma</h2><button class="btn small" id="fileClose" type="button">Fechar</button></div>
+    <div class="group">
+      <h3>Exportar</h3>
+      <p class="muted">Contém seed, base, tabela de primos, sistema fonético com acento, caracteres desenhados e voz escolhida.</p>
+      <textarea id="jsonOut" readonly spellcheck="false"></textarea>
+      <div class="row"><button class="btn primary" id="btnDlJson" type="button">Baixar .json</button><button class="btn" id="btnCopyJson" type="button">Copiar JSON</button></div>
+    </div>
+    <div class="group">
+      <h3>Importar</h3>
+      <div class="row"><input id="fileIn" type="file" accept=".json,application/json"></div>
+      <textarea id="jsonIn" placeholder="Ou cole aqui o conteúdo do arquivo" spellcheck="false"></textarea>
+      <div class="row"><button class="btn" id="btnLoadJson" type="button">Carregar idioma colado</button></div>
+      <p class="err" id="importErr"></p>
+    </div>
+  </div>
+</div>
+<div id="toast" role="status"></div>
+
+<script>
+/* Conlang Engine v2 — seed + base -> cifra de primos, fonologia com acento, escrita */
+(function (root) {
+  'use strict';
+
+  const DIGITS = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
+  const LOWER = "abcdefghijklmnopqrstuvwxyz";
+  const ACCENTED = "áàâãäåéèêëíìîïóòôõöúùûüçñ";
+  const NUMS = "0123456789";
+  const SYMBOLS = ".,!?:;()[]{}\"'-_\\/+*&%@#$^";
+  const ALPHABET = (LOWER + LOWER.toUpperCase() + ACCENTED + ACCENTED.toUpperCase() + NUMS + SYMBOLS).split("");
+  const UNIVERSAL_CONSONANTS = ["p","b","t","d","k","g","m","n","ŋ","f","v","s","z","ʃ","ʒ","l","r","j","w","h"];
+  const UNIVERSAL_VOWELS = ["a","e","i","o","u","æ","ɪ","ʊ","ə"];
+  const PATTERNS = ["CV", "CVC", "CVCV", "CVCVC", "CVCVCV"];
+  const STRESS_RULES = ["initial", "penult", "final"];
+  const MAX_BASE = 1024;       // limite técnico (desempenho da interface); não é limite da cifra
+  const PRESET_GLYPHS = 64;    // glifos únicos sugeridos; acima disso, repetem até o usuário desenhar
+
+  const CONSONANT_INFO = {
+    p:["oclusiva","bilabial",0], b:["oclusiva","bilabial",1],
+    t:["oclusiva","alveolar",0], d:["oclusiva","alveolar",1],
+    k:["oclusiva","velar",0],    g:["oclusiva","velar",1],
+    m:["nasal","bilabial",1], n:["nasal","alveolar",1], "ŋ":["nasal","velar",1],
+    f:["fricativa","labiodental",0], v:["fricativa","labiodental",1],
+    s:["fricativa","alveolar",0], z:["fricativa","alveolar",1],
+    "ʃ":["fricativa","pós-alveolar",0], "ʒ":["fricativa","pós-alveolar",1],
+    h:["fricativa","glotal",0],
+    l:["aproximante","alveolar",1], r:["aproximante","alveolar",1],
+    j:["aproximante","palatal",1], w:["aproximante","labiovelar",1]
+  };
+  const VOWEL_INFO = {
+    i:["fechada","anterior"], "ɪ":["quase fechada","anterior"], e:["média-fechada","anterior"],
+    "æ":["quase aberta","anterior"], a:["aberta","central"], "ə":["média","central"],
+    u:["fechada","posterior"], "ʊ":["quase fechada","posterior"], o:["média-fechada","posterior"]
+  };
+  const isVowel = ch => UNIVERSAL_VOWELS.includes(ch);
+
+  // ---------- PRNG determinístico ----------
+  function hashStr(s) {
+    let h1 = 0xdeadbeef, h2 = 0x41c6ce57;
+    for (let i = 0; i < s.length; i++) {
+      const ch = s.charCodeAt(i);
+      h1 = Math.imul(h1 ^ ch, 2654435761);
+      h2 = Math.imul(h2 ^ ch, 1597334677);
+    }
+    h1 = Math.imul(h1 ^ (h1 >>> 16), 2246822507) ^ Math.imul(h2 ^ (h2 >>> 13), 3266489909);
+    h2 = Math.imul(h2 ^ (h2 >>> 16), 2246822507) ^ Math.imul(h1 ^ (h1 >>> 13), 3266489909);
+    return (h1 ^ h2) >>> 0;
+  }
+  function rng(seed, salt) {
+    let a = hashStr(String(seed) + "|" + salt);
+    return function () {
+      a |= 0; a = (a + 0x6D2B79F5) | 0;
+      let t = Math.imul(a ^ (a >>> 15), 1 | a);
+      t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t;
+      return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+    };
+  }
+  const randInt = (r, lo, hi) => lo + Math.floor(r() * (hi - lo + 1));
+  function shuffle(r, arr) {
+    for (let i = arr.length - 1; i > 0; i--) { const j = Math.floor(r() * (i + 1)); [arr[i], arr[j]] = [arr[j], arr[i]]; }
+    return arr;
+  }
+  const sample = (r, arr, k) => shuffle(r, arr.slice()).slice(0, k);
+
+  // ---------- Primos ----------
+  function isPrime(n) {
+    if (n < 2) return false;
+    for (let i = 2; i * i <= n; i++) if (n % i === 0) return false;
+    return true;
+  }
+  function firstPrimes(n) { const out = []; for (let c = 2; out.length < n; c++) if (isPrime(c)) out.push(c); return out; }
+  function nextPrime(n) { let c = n + 1; while (!isPrime(c)) c++; return c; }
+  function buildPrimes(seed) {
+    const primes = shuffle(rng(seed, "primes2"), firstPrimes(ALPHABET.length));
+    const map = {}; ALPHABET.forEach((c, i) => { map[c] = primes[i]; });
+    return { primes: map, multiplier: nextPrime(Math.max(...primes)) };
+  }
+
+  // ---------- Fonologia ----------
+  function shapeSets(pattern, cons, vows, codas) {
+    return pattern.split("").map((ch, i) =>
+      ch === "V" ? vows : (i === pattern.length - 1 && pattern.endsWith("C") && pattern.length % 2 === 1 ? codas : cons));
+  }
+  function enumerateSyllables(pattern, cons, vows, codas) {
+    let list = [""];
+    for (const set of shapeSets(pattern, cons, vows, codas)) list = list.flatMap(s => set.map(x => s + x));
+    return list;
+  }
+  function buildPhonology(seed, base) {
+    const r = rng(seed, "phonology");
+    const c = randInt(r, 8, 16), v = randInt(r, 3, 6);
+    const consonants = sample(r, UNIVERSAL_CONSONANTS, c);
+    const vowels = sample(r, UNIVERSAL_VOWELS, v);
+    const codas = sample(r, consonants, randInt(r, 3, Math.min(6, c)));
+    let pi = randInt(r, 0, 2);
+    const space = p => shapeSets(p, consonants, vowels, codas).reduce((a, s) => a * s.length, 1);
+    while (space(PATTERNS[pi]) < base && pi < PATTERNS.length - 1) pi++;
+    const pattern = PATTERNS[pi];
+    const all = enumerateSyllables(pattern, consonants, vowels, codas);
+    const syllables = shuffle(rng(seed, "syllables:" + pattern), all).slice(0, base);
+    const rs = rng(seed, "stress"), x = rs();
+    const stress = x < 0.5 ? "initial" : x < 0.8 ? "penult" : "final";
+    return { consonants, vowels, codas, pattern, syllables, stress };
+  }
+
+  // ---------- Glifos ----------
+  const COLS = [18, 50, 82], ROWS = [12, 37, 63, 88];
+  function genGlyph(seed, i, attempt) {
+    const r = rng(seed, "glyph:" + i + ":" + attempt);
+    const anchors = []; for (const x of COLS) for (const y of ROWS) anchors.push([x, y]);
+    const strokes = [], ns = randInt(r, 1, 3);
+    for (let s = 0; s < ns; s++) {
+      const np = randInt(r, 2, 4);
+      strokes.push(sample(r, anchors, np).map(([x, y]) => [Math.round(x + r() * 8 - 4), Math.round(y + r() * 8 - 4)]));
+    }
+    return strokes;
+  }
+  // únicos até PRESET_GLYPHS; depois repetem (i % PRESET_GLYPHS) até o usuário desenhar
+  function defaultGlyphs(seed, count) {
+    const seen = new Set(), out = [];
+    for (let i = 0; i < count; i++) {
+      if (i >= PRESET_GLYPHS) { out.push(JSON.parse(JSON.stringify(out[i % PRESET_GLYPHS]))); continue; }
+      let g, a = 0, key;
+      do { g = genGlyph(seed, i, a++); key = JSON.stringify(g); } while (seen.has(key) && a < 60);
+      seen.add(key); out.push(g);
+    }
+    return out;
+  }
+  function sanitizeGlyph(g) {
+    if (!Array.isArray(g) || g.length > 60) return null;
+    const out = [];
+    for (const s of g) {
+      if (!Array.isArray(s) || s.length > 600) return null;
+      const st = [];
+      for (const p of s) {
+        if (!Array.isArray(p) || p.length < 2 || !Number.isFinite(p[0]) || !Number.isFinite(p[1])) return null;
+        st.push([Math.round(Math.max(-5, Math.min(105, p[0])) * 10) / 10, Math.round(Math.max(-5, Math.min(105, p[1])) * 10) / 10]);
+      }
+      if (st.length) out.push(st);
+    }
+    return out;
+  }
+  // índices cujo glifo é vazio ou idêntico a um anterior
+  function glyphIssues(lang) {
+    const first = new Map(), dups = {}, empties = [];
+    for (let i = 0; i < lang.base; i++) {
+      const g = lang.glyphs[i] || [], key = JSON.stringify(g);
+      if (!g.length) { empties.push(i); continue; }
+      if (first.has(key)) dups[i] = first.get(key); else first.set(key, i);
+    }
+    return { dups, dupCount: Object.keys(dups).length, empties };
+  }
+
+  // ---------- Idioma ----------
+  const clampBase = b => { b = Math.round(Number(b)); return Math.min(MAX_BASE, Math.max(2, isNaN(b) ? 10 : b)); };
+  function createLanguage(seed, base, opts) {
+    opts = opts || {};
+    seed = String(seed); base = clampBase(base);
+    const { primes, multiplier } = buildPrimes(seed);
+    const glyphs = defaultGlyphs(seed, base);
+    if (Array.isArray(opts.glyphs)) {            // inventário independente da base: preserva também os que sobram
+      opts.glyphs.forEach((g, i) => { if (Array.isArray(g)) glyphs[i] = g; });
+    }
+    return {
+      format: "procedural-conlang", version: 2,
+      name: opts.name || ("Língua " + seed),
+      seed, base, symbols: SYMBOLS, primes, multiplier,
+      options: { exact: !(opts.options && opts.options.exact === false) },
+      phonology: buildPhonology(seed, base),
+      glyphs,
+      style: { stroke: (opts.style && opts.style.stroke) || 5 },
+      voice: { id: (opts.voice && opts.voice.id) || "aria" }
+    };
+  }
+
+  function validateLanguage(o) {
+    const fail = m => { throw new Error(m); };
+    if (!o || typeof o !== "object" || o.format !== "procedural-conlang") fail("Arquivo não é um idioma deste projeto.");
+    const base = Number(o.base);
+    if (!Number.isInteger(base) || base < 2 || base > MAX_BASE) fail("Base inválida (2 a " + MAX_BASE + ").");
+    if (typeof o.seed === "undefined" || o.seed === null || String(o.seed).length > 200) fail("Seed inválida.");
+    // primos
+    if (!o.primes || typeof o.primes !== "object") fail("Tabela de primos ausente.");
+    if (!Number.isInteger(o.multiplier) || o.multiplier < 3 || o.multiplier > 1e7 || !isPrime(o.multiplier)) fail("Multiplicador inválido.");
+    const seenP = new Set(); let maxP = 0;
+    for (const k of Object.keys(o.primes)) {
+      const p = o.primes[k];
+      if ([...k].length !== 1) fail("Chave inválida na tabela de primos: " + k);
+      if (!Number.isInteger(p) || p < 2 || !isPrime(p)) fail("Valor não primo para '" + k + "'.");
+      if (seenP.has(p)) fail("Primo repetido na tabela.");
+      seenP.add(p); maxP = Math.max(maxP, p);
+    }
+    if (!seenP.size) fail("Tabela de primos vazia.");
+    if (maxP >= o.multiplier) fail("O multiplicador deve ser maior que todos os primos.");
+    // fonologia
+    const ph = o.phonology;
+    if (!ph || !Array.isArray(ph.syllables)) fail("Fonologia incompleta.");
+    if (!PATTERNS.includes(ph.pattern)) fail("Padrão silábico desconhecido: " + ph.pattern);
+    for (const [name, list, uni] of [["consoantes", ph.consonants, UNIVERSAL_CONSONANTS], ["vogais", ph.vowels, UNIVERSAL_VOWELS], ["codas", ph.codas, UNIVERSAL_CONSONANTS]]) {
+      if (!Array.isArray(list) || !list.length || !list.every(x => uni.includes(x))) fail("Inventário de " + name + " inválido.");
+    }
+    if (ph.syllables.length < base) fail("Há menos sílabas que dígitos na base.");
+    if (new Set(ph.syllables).size !== ph.syllables.length) fail("Sílabas duplicadas.");
+    for (const s of ph.syllables) {
+      const chars = [...String(s)];
+      if (chars.length !== ph.pattern.length) fail("Sílaba fora do padrão: " + s);
+      chars.forEach((ch, i) => {
+        const wantV = ph.pattern[i] === "V";
+        if (wantV ? !ph.vowels.includes(ch) : !ph.consonants.includes(ch)) fail("Sílaba com fonema fora do inventário: " + s);
+      });
+    }
+    const lang = Object.assign({}, o);
+    lang.base = base; lang.seed = String(o.seed); lang.version = 2;
+    lang.phonology = Object.assign({}, ph, { stress: STRESS_RULES.includes(ph.stress) ? ph.stress : "initial" });
+    lang.options = { exact: !!(o.options && o.options.exact) };
+    const defs = defaultGlyphs(lang.seed, base);
+    const src = Array.isArray(o.glyphs) ? o.glyphs : [];
+    lang.glyphs = [];
+    for (let i = 0; i < Math.max(base, src.length); i++) {
+      const clean = i < src.length ? sanitizeGlyph(src[i]) : null;
+      lang.glyphs.push(clean || (i < base ? defs[i] : []));
+    }
+    lang.style = { stroke: Math.min(14, Math.max(1, Number(o.style && o.style.stroke) || 5)) };
+    lang.voice = { id: String((o.voice && o.voice.id) || "aria") };
+    lang.name = String(o.name || ("Língua " + lang.seed)).slice(0, 60);
+    lang.symbols = SYMBOLS;
+    return lang;
+  }
+
+  function rt(lang) {
+    const sig = lang.seed + "|" + lang.base + "|" + lang.phonology.syllables.length;
+    if (lang._rt && lang._rt.sig === sig) return lang._rt;
+    const reverse = {}; for (const c in lang.primes) reverse[lang.primes[c]] = c;
+    const sylToDigit = {}; lang.phonology.syllables.slice(0, lang.base).forEach((s, i) => { sylToDigit[s] = i; });
+    const data = { sig, reverse, sylToDigit, M: BigInt(lang.multiplier) };
+    Object.defineProperty(lang, "_rt", { value: data, enumerable: false, configurable: true, writable: true });
+    return data;
+  }
+
+  // ---------- Texto <-> número ----------
+  const has = (o, k) => Object.prototype.hasOwnProperty.call(o, k);
+  const digitLabel = (lang, i) => (lang.base <= 62 ? DIGITS[i] : String(i));
+
+  function preprocess(text) {
+    return String(text).normalize("NFC").replace(/\r\n?/g, "\n")
+      .replace(/[“”«»„]/g, '"').replace(/[‘’‚`´]/g, "'").replace(/[–—−]/g, "-").replace(/…/g, "...")
+      .replace(/[\t ]+/g, " ");
+  }
+  const foldChar = ch => ch.normalize("NFD").replace(/[̀-ͯ]/g, "").toLowerCase();
+  function mapChar(lang, ch) {
+    if (lang.options && lang.options.exact && has(lang.primes, ch)) return ch;
+    const f = foldChar(ch);
+    return f.length === 1 && has(lang.primes, f) ? f : null;
+  }
+  function tokenize(lang, text) {
+    const raw = preprocess(text).match(/[\p{L}\p{N}]+|\n|[^\s]/gu) || [];
+    const tokens = []; let skipped = 0, nl = 0;
+    for (const r of raw) {
+      if (r === "\n") { nl++; if (tokens.length && nl <= 2) tokens.push({ kind: "nl", token: "\n" }); continue; }
+      nl = 0;
+      let s = ""; for (const ch of r) { const m = mapChar(lang, ch); if (m === null) skipped++; else s += m; }
+      if (!s) continue;
+      tokens.push({ kind: /^[\p{L}\p{N}]/u.test(r) ? "word" : "punct", token: s });
+    }
+    while (tokens.length && tokens[tokens.length - 1].kind === "nl") tokens.pop();
+    return { tokens, skipped };
+  }
+
+  function wordToNumber(lang, word) {
+    const M = rt(lang).M; let total = 0n, mult = 1n;
+    for (const ch of word) { total += BigInt(lang.primes[ch]) * mult; mult *= M; }
+    return total;
+  }
+  function numberToWord(lang, n) {
+    const { reverse, M } = rt(lang); let out = "", ok = true;
+    while (n > 0n) {
+      const rem = Number(n % M);
+      if (has(reverse, rem)) out += reverse[rem]; else { out += "\uFFFD"; ok = false; }
+      n /= M;
+    }
+    return { word: out, ok };
+  }
+  function toDigits(n, base) {
+    if (n === 0n) return [0];
+    const b = BigInt(base), out = [];
+    while (n > 0n) { out.push(Number(n % b)); n /= b; }
+    return out.reverse();
+  }
+  function fromDigits(d, base) { const b = BigInt(base); let v = 0n; for (const x of d) v = v * b + BigInt(x); return v; }
+
+  // Sílabas reais de uma palavra (as "unidades" de dígito podem ter 1 ou mais sílabas)
+  function syllabify(str) {
+    const ph = [...str], vi = [];
+    ph.forEach((c, i) => { if (isVowel(c)) vi.push(i); });
+    if (!vi.length) return [str];
+    const sylls = [];
+    let start = 0;
+    for (let k = 0; k < vi.length; k++) {
+      let end;
+      if (k === vi.length - 1) end = ph.length;
+      else {
+        const m = vi[k + 1] - vi[k] - 1;           // consoantes entre as vogais
+        end = vi[k] + 1 + (m >= 2 ? m - 1 : 0);    // 1 consoante vai para o onset da próxima
+      }
+      sylls.push(ph.slice(start, end).join("")); start = end;
+    }
+    return sylls;
+  }
+  function stressIndex(rule, n) {
+    if (n <= 1) return 0;
+    return rule === "final" ? n - 1 : rule === "penult" ? n - 2 : 0;
+  }
+  function formatIPA(sylls, stress) {
+    if (sylls.length === 1) return sylls[0];
+    return sylls.map((s, i) => (i === 0 ? (stress === 0 ? "ˈ" : "") : (i === stress ? "ˈ" : ".")) + s).join("");
+  }
+
+  function encodeText(lang, text) {
+    const { tokens, skipped } = tokenize(lang, text);
+    const words = tokens.map(t => {
+      if (t.kind === "nl") return { kind: "nl", token: "\n", digits: [], units: [], digitStr: "", sylls: [], stress: 0, ipa: "" };
+      const digits = toDigits(wordToNumber(lang, t.token), lang.base);
+      const units = digits.map(d => lang.phonology.syllables[d]);
+      const sylls = syllabify(units.join("")), stress = stressIndex(lang.phonology.stress, sylls.length);
+      return {
+        kind: t.kind, token: t.token, digits, units,
+        digitStr: lang.base <= 62 ? digits.map(d => DIGITS[d]).join("") : digits.join("-"),
+        sylls, stress, ipa: formatIPA(sylls, stress)
+      };
+    });
+    return { words, skipped };
+  }
+
+  const isWordTok = t => !!t && /^[\p{L}\p{N}]/u.test(t);
+  function detokenize(tokens) {
+    let out = "", dq = false, sq = false, glue = false, prev = null;
+    tokens.forEach((t, i) => {
+      let space = true; const next = tokens[i + 1];
+      if (i === 0 || prev === "\n" || t === "\n" || glue) space = false;
+      else if (/^[.,!?:;)\]}]$/.test(t)) space = false;
+      else if (/^[(\[{]$/.test(prev)) space = false;
+      glue = false;
+      if (t === '"') { if (dq) space = false; else glue = true; dq = !dq; }
+      else if (t === "'") {
+        if (isWordTok(prev) && isWordTok(next)) { space = false; glue = true; }
+        else { if (sq) space = false; else glue = true; sq = !sq; }
+      } else if (/^[-\/\\_]$/.test(t) && isWordTok(prev) && isWordTok(next)) { space = false; glue = true; }
+      else if (/^[(\[{]$/.test(t)) glue = true;
+      out += (space ? " " : "") + t; prev = t;
+    });
+    return out;
+  }
+
+  function decodeDigits(lang, digits) { return numberToWord(lang, fromDigits(digits, lang.base)); }
+
+  function decodeGeneric(lang, str, parseWord) {
+    const errors = [], tokens = [];
+    String(str).split(/\r?\n/).forEach((line, li, arr) => {
+      for (const w of line.trim().split(/\s+/).filter(Boolean)) {
+        const d = parseWord(w);
+        if (!d) { errors.push(w); tokens.push("[?]"); continue; }
+        const r = decodeDigits(lang, d);
+        if (!r.ok) errors.push(w);
+        tokens.push(r.word);
+      }
+      if (li < arr.length - 1 && tokens.length) {
+        const k = tokens.length;
+        if (!(tokens[k - 1] === "\n" && tokens[k - 2] === "\n")) tokens.push("\n");   // no máximo uma linha em branco
+      }
+    });
+    while (tokens.length && tokens[tokens.length - 1] === "\n") tokens.pop();
+    return { text: detokenize(tokens), errors };
+  }
+  function decodeDigitText(lang, str) {
+    return decodeGeneric(lang, str, w => {
+      const d = lang.base <= 62 ? [...w].map(c => DIGITS.indexOf(c)) : w.split("-").map(x => (/^\d+$/.test(x) ? Number(x) : -1));
+      return d.length && d.every(x => x >= 0 && x < lang.base) ? d : null;
+    });
+  }
+  function decodePhoneticText(lang, str) {
+    const { sylToDigit } = rt(lang), len = lang.phonology.pattern.length;
+    return decodeGeneric(lang, str, w => {
+      const clean = [...w].filter(c => !".ˈˌ·‿-".includes(c));
+      if (!clean.length || clean.length % len) return null;
+      const digits = [];
+      for (let i = 0; i < clean.length; i += len) {
+        const s = clean.slice(i, i + len).join("");
+        if (!has(sylToDigit, s)) return null;
+        digits.push(sylToDigit[s]);
+      }
+      return digits;
+    });
+  }
+
+  // ---------- Glifos -> SVG ----------
+  function strokePath(pts) {
+    const f = n => Math.round(n * 10) / 10;
+    if (!pts.length) return "";
+    if (pts.length === 1) return `M${f(pts[0][0])} ${f(pts[0][1])}l.1 0`;
+    let d = `M${f(pts[0][0])} ${f(pts[0][1])}`;
+    if (pts.length === 2) return d + `L${f(pts[1][0])} ${f(pts[1][1])}`;
+    for (let i = 1; i < pts.length - 1; i++) {
+      const mx = (pts[i][0] + pts[i + 1][0]) / 2, my = (pts[i][1] + pts[i + 1][1]) / 2;
+      d += `Q${f(pts[i][0])} ${f(pts[i][1])} ${f(mx)} ${f(my)}`;
+    }
+    const l = pts[pts.length - 1];
+    return d + `L${f(l[0])} ${f(l[1])}`;
+  }
+  const glyphPath = strokes => strokes.map(strokePath).join("");
+
+  function layoutScript(words, size, maxWidth) {
+    const adv = size * 0.78, wordGap = size * 0.55, lineH = size * 1.25, items = [];
+    let x = 0, y = 0, maxX = 0;
+    for (const w of words) {
+      if (w.kind === "nl") { x = 0; y += lineH; continue; }
+      const wlen = w.digits.length * adv;
+      if (x > 0 && x + wlen > maxWidth) { x = 0; y += lineH; }
+      w.digits.forEach((d, i) => items.push({ x: x + i * adv, y, d }));
+      x += wlen + wordGap; maxX = Math.max(maxX, x - wordGap);
+    }
+    return { items, width: Math.max(maxX, size), height: y + lineH, adv };
+  }
+  function scriptSVG(lang, words, size, maxWidth, color) {
+    const L = layoutScript(words, size, maxWidth), k = size / 100;
+    let g = "";
+    for (const it of L.items) g += `<path transform="translate(${it.x.toFixed(1)} ${it.y.toFixed(1)}) scale(${k})" d="${glyphPath(lang.glyphs[it.d] || [])}"/>`;
+    return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${L.width.toFixed(1)} ${L.height.toFixed(1)}" width="${L.width.toFixed(0)}" height="${L.height.toFixed(0)}" fill="none" stroke="${color || "currentColor"}" stroke-width="${(lang.style.stroke * k).toFixed(2)}" stroke-linecap="round" stroke-linejoin="round">${g}</svg>`;
+  }
+
+  const api = {
+    DIGITS, SYMBOLS, ALPHABET, UNIVERSAL_CONSONANTS, UNIVERSAL_VOWELS, PATTERNS, STRESS_RULES,
+    MAX_BASE, PRESET_GLYPHS, CONSONANT_INFO, VOWEL_INFO, isVowel,
+    hashStr, rng, createLanguage, validateLanguage, clampBase, digitLabel, glyphIssues, sanitizeGlyph,
+    tokenize, encodeText, decodeDigitText, decodePhoneticText, detokenize, syllabify,
+    wordToNumber, numberToWord, toDigits, fromDigits,
+    strokePath, glyphPath, layoutScript, scriptSVG, defaultGlyphs, genGlyph
+  };
+  if (typeof module !== "undefined" && module.exports) module.exports = api; else root.Conlang = api;
+})(typeof window !== "undefined" ? window : globalThis);
+
+</script>
+<script>
+/* Speech — sintetizador de formantes em DSP puro (estilo Klatt). Determinístico e sem WebAudio:
+   a mesma entrada gera exatamente as mesmas amostras em qualquer aparelho.
+   Fonte glótica contínua -> cascata de ressonadores (F1..F5) + anti-ressonador nasal + ramo de fricção. */
+(function (root) {
+  'use strict';
+  const C = (typeof module !== "undefined" && module.exports) ? require('./engine.js') : root.Conlang;
+  const SR = 22050;      // taxa de amostragem
+  const CR = 2000;       // taxa dos controles (trilhas de parâmetros)
+  const MAX_SECONDS = 90;
+
+  const VOICES = {
+    aria:  { label: "Aria (aguda, suave)", f0: 205, scale: 1.10, rate: 1.00, oq: 0.62, tilt: 3400, breath: 0.05, jitter: 0.006, saw: false, flat: false, ng: 1.00 },
+    bruno: { label: "Bruno (grave)",       f0: 105, scale: 0.90, rate: 0.95, oq: 0.55, tilt: 2600, breath: 0.04, jitter: 0.007, saw: false, flat: false, ng: 0.86 },
+    pip:   { label: "Pip (infantil)",      f0: 300, scale: 1.28, rate: 1.10, oq: 0.66, tilt: 4200, breath: 0.05, jitter: 0.008, saw: false, flat: false, ng: 2.08 },
+    robo:  { label: "Autômato (robótica)", f0: 125, scale: 1.00, rate: 1.05, oq: 0.60, tilt: 5000, breath: 0.00, jitter: 0.000, saw: true,  flat: true,  ng: 3.31 }
+  };
+
+  // formantes alvo [F1,F2,F3] em Hz para trato vocal de referência
+  const VOWF = { a:[800,1250,2600], e:[500,1900,2650], i:[300,2250,3000], o:[500,900,2500], u:[320,850,2300],
+                 "æ":[700,1750,2550], "ɪ":[400,1950,2550], "ʊ":[450,1050,2400], "ə":[520,1450,2500] };
+  const APPF = { l:[360,1300,2800], r:[420,1250,1650], j:[270,2200,3000], w:[300,720,2300] };
+  const NASF = { m:{f:[250,1000,2200], z:1100}, n:{f:[250,1450,2400], z:1700}, "ŋ":{f:[250,1900,2500], z:2300} };
+  const LOCUS = { bilabial: 800, alveolar: 1700, velar: 1900, labiodental: 1100, "pós-alveolar": 1800, glotal: 1400, palatal: 2000, labiovelar: 700 };
+
+  // Ganhos calibrados (ver teste de níveis): dB relativos à vogal tônica ficam perto dos alvos naturais.
+  const G = {
+    vowel: 1.0, weak: 0.82, approx: 0.8, nasal: 0.7, voicedFric: 0.05, closureBar: 0.12, vot: 0.4,
+    fric: {                          // freq, largura de banda, ganho (calibrado contra a vogal vizinha)
+      f: { f: 4800, bw: 5000, g: 0.0101 }, v: { f: 4800, bw: 5000, g: 0.006 },
+      s: { f: 6800, bw: 2200, g: 0.0084 }, z: { f: 6500, bw: 2400, g: 0.005 },
+      "ʃ": { f: 3300, bw: 1600, g: 0.0404 }, "ʒ": { f: 3100, bw: 1700, g: 0.0087 }
+    },
+    h: 0.0234,                       // aspiração filtrada pelas formantes da vogal vizinha
+    burst: { bilabial: { f: 1100, bw: 1800, g: 0.2043 }, alveolar: { f: 4500, bw: 2200, g: 0.0593 }, velar: { f: 2300, bw: 1500, g: 0.0858 } },
+    asp: 0.0254,
+    // intensidade intrínseca das vogais equalizada pela resposta da cascata (independe de f0)
+    vgain: { a: 0.383, e: 0.766, i: 0.9, o: 1.204, u: 3.39, "æ": 0.449, "ɪ": 1.08, "ʊ": 1.665, "ə": 1.12 }
+  };
+
+  const DUR = { v: .125, approx: .065, nasal: .075, fric: .10, stopVL: .095, stopV: .07, h: .07, burst: .012 };
+
+  // ---------- plano: tempos, acentos, frases ----------
+  function plan(items, voice, opts) {
+    const rate = (voice.rate || 1) * (opts && opts.rate || 1);
+    const events = [], phrases = [];
+    let t = 0.12, cur = null, lastPause = 0;
+    const pause = d => { d = Math.min(0.8, d) / Math.sqrt(rate); events.push({ kind: "pause", t0: t, d }); t += d; lastPause = d; };
+    const startPhrase = () => { if (!cur) { cur = { start: t, end: t, kind: "end", accents: [] }; phrases.push(cur); } };
+    const endPhrase = k => { if (cur) { cur.kind = k; cur = null; } };
+
+    const finalWord = i => { for (let j = i + 1; j < items.length; j++) { if (items[j].kind === "word") return false; if (items[j].kind === "nl" || /^[.,!?:;]$/.test(items[j].token)) return true; } return true; };
+
+    for (let wi = 0; wi < items.length && t < MAX_SECONDS; wi++) {
+      const it = items[wi];
+      if (it.kind === "nl") { endPhrase("."); pause(0.7); continue; }
+      if (it.kind === "punct") {
+        if (/^[,;:]$/.test(it.token)) { endPhrase(","); pause(it.token === "," ? 0.26 : 0.34); }
+        else if (/^[.!?]$/.test(it.token)) { endPhrase(it.token); pause(0.55); }
+        continue;                              // outros símbolos não são pronunciados
+      }
+      if (it.kind !== "word") continue;
+      startPhrase();
+      const nS = it.sylls.length, pf = finalWord(wi);
+      it.sylls.forEach((s, si) => {
+        const stressed = nS > 1 && si === it.stress, lastS = si === nS - 1;
+        [...s].forEach((ph, pi) => {
+          const isV = C.isVowel(ph); let cls, d;
+          if (isV) { cls = "v"; d = DUR.v; if (stressed) d *= 1.2; else if (nS > 1) d *= 0.88; if (lastS) d *= 1.1; if (lastS && pf) d *= 1.45; }
+          else {
+            const info = C.CONSONANT_INFO[ph]; cls = info[0];
+            d = cls === "oclusiva" ? (info[2] ? DUR.stopV : DUR.stopVL) : cls === "fricativa" ? (ph === "h" ? DUR.h : DUR.fric * ((ph === "s" || ph === "z" || ph === "ʃ" || ph === "ʒ") ? 1.1 : 0.95)) : cls === "nasal" ? DUR.nasal : DUR.approx;
+            if (pi === 0 && stressed) d *= 1.05;
+          }
+          d /= rate;
+          events.push({ kind: "ph", ph, cls, t0: t, d, stressed, vowel: isV });
+          if (isV && stressed) cur.accents.push(t + d / 2);
+          t += d; cur.end = t;
+        });
+      });
+      lastPause = 0;
+      events.push({ kind: "pause", t0: t, d: 0.03 / rate, gap: true }); t += 0.03 / rate;
+    }
+    endPhrase("end");
+    const total = t + 0.25;
+    return { events, phrases, total };
+  }
+
+  // ---------- trilhas de parâmetros ----------
+  function buildTracks(pl, voice) {
+    const sc = voice.scale, ng = voice.ng || 1;
+    const st = { av: 0, ah: 0, af: 0, ff: 4000, fbw: 2000, f1: 500 * sc, f2: 1500 * sc, f3: 2500 * sc, b1: 80, b2: 100, b3: 150, nz: 0, zf: 1500 };
+    const tracks = {}; for (const k in st) tracks[k] = [[0, st[k]]];
+    function frame(t0, d, tr, v) {
+      tr = Math.min(tr, d * 0.9);
+      for (const k in st) {
+        const val = (k in v) ? v[k] : (k === "av" || k === "ah" || k === "af" || k === "nz") ? 0 : st[k];
+        tracks[k].push([t0 + tr, val]); tracks[k].push([t0 + d, val]); st[k] = val;
+      }
+    }
+    const ev = pl.events;
+    // vogal de contexto: a próxima na frase; se não houver, a anterior
+    function ctxVowel(idx) {
+      for (let j = idx + 1; j < ev.length; j++) { if (ev[j].kind === "pause" && !ev[j].gap) break; if (ev[j].kind === "ph" && ev[j].vowel) return ev[j].ph; }
+      for (let j = idx - 1; j >= 0; j--) { if (ev[j].kind === "pause" && !ev[j].gap) break; if (ev[j].kind === "ph" && ev[j].vowel) return ev[j].ph; }
+      return "ə";
+    }
+    const vf = ph => { const F = VOWF[ph] || VOWF["ə"]; return { f1: F[0] * sc, f2: F[1] * sc, f3: F[2] * sc }; };
+
+    ev.forEach((e, idx) => {
+      const { t0, d } = e;
+      if (e.kind === "pause") { frame(t0, d, 0.03, { av: 0, ah: 0, af: 0, nz: 0 }); return; }
+      const ph = e.ph;
+      if (e.vowel) {
+        frame(t0, d, Math.min(0.05, d * 0.5), Object.assign({ av: (e.stressed ? G.vowel : G.weak) * (G.vgain[ph] || 1), ah: voice.breath, b1: 70, b2: 90, b3: 140, nz: 0 }, vf(ph)));
+        return;
+      }
+      const info = C.CONSONANT_INFO[ph], cls = e.cls, voiced = !!info[2], nv = vf(ctxVowel(idx));
+      if (cls === "aproximante") {
+        const F = APPF[ph];
+        frame(t0, d, Math.min(0.045, d * 0.6), { av: G.approx, ah: 0.02, f1: F[0] * sc, f2: F[1] * sc, f3: F[2] * sc, b1: 90, b2: 110, b3: 170, nz: 0 });
+      } else if (cls === "nasal") {
+        const N = NASF[ph];
+        frame(t0, d, Math.min(0.03, d * 0.5), { av: G.nasal, ah: 0, f1: N.f[0] * sc, f2: N.f[1] * sc, f3: N.f[2] * sc, b1: 110, b2: 200, b3: 220, nz: 1, zf: N.z * sc });
+      } else if (cls === "fricativa") {
+        if (ph === "h") { frame(t0, d, 0.02, Object.assign({ av: 0, ah: G.h * ng, af: 0, nz: 0, b1: 120, b2: 150, b3: 200 }, nv)); return; }
+        const P = G.fric[ph];
+        frame(t0, d, 0.02, Object.assign({ av: voiced ? G.voicedFric : 0, ah: 0, af: P.g * ng, ff: P.f, fbw: P.bw, nz: 0 }, nv));
+      } else {  // oclusiva: fechamento, soltura (burst), aspiração/VOT
+        const place = info[1], B = G.burst[place] || G.burst.alveolar, loc = LOCUS[place] || 1500;
+        const dc = d * 0.55, db = DUR.burst, da = Math.max(0.008, d - dc - db);
+        const closeF = { f1: 250 * sc, f2: (loc * 0.5 + nv.f2 / sc * 0.5) * sc, f3: nv.f3 };
+        frame(t0, dc, 0.015, Object.assign({ av: voiced ? G.closureBar : 0, ah: 0, af: 0, nz: 0, b1: 90, b2: 120, b3: 170 }, closeF));
+        frame(t0 + dc, db, 0.002, Object.assign({ av: voiced ? 0.3 : 0, ah: 0, af: B.g * ng, ff: B.f * (place === "velar" ? Math.min(1.3, nv.f2 / sc / 1500 + 0.3) : 1), fbw: B.bw, nz: 0 }, nv));
+        frame(t0 + dc + db, da, 0.004, Object.assign({ av: voiced ? G.vot : 0, ah: voiced ? 0 : G.asp * ng, af: 0, nz: 0 }, nv));
+      }
+    });
+    return tracks;
+  }
+
+  // ---------- contorno de tom ----------
+  function buildF0(pl, voice, seed) {
+    const n = Math.ceil(pl.total * CR) + 2, f = new Float32Array(n).fill(voice.f0);
+    if (voice.flat) return f;
+    const FALL = { ".": 0.12, "!": 0.08, ",": -0.04, "?": -0.20, end: 0.12 };
+    let prevEnd = 0, prevVal = voice.f0 * 1.05;
+    for (const ph of pl.phrases) {
+      const s = Math.floor(ph.start * CR), e = Math.min(n - 1, Math.ceil(ph.end * CR)), startVal = voice.f0 * 1.08;
+      for (let i = Math.floor(prevEnd * CR); i < s && i < n; i++) f[i] = prevVal + (startVal - prevVal) * ((i - prevEnd * CR) / Math.max(1, s - prevEnd * CR));
+      const dur = Math.max(0.05, ph.end - ph.start), fallDur = Math.min(0.18, dur * 0.4), fall = FALL[ph.kind] != null ? FALL[ph.kind] : 0.12;
+      for (let i = s; i <= e; i++) {
+        const t = i / CR, u = (t - ph.start) / dur; let v = voice.f0 * (1.08 - 0.17 * u);
+        if (t > ph.end - fallDur) v *= 1 - fall * ((t - (ph.end - fallDur)) / fallDur);
+        f[i] = v;
+      }
+      prevVal = f[e]; prevEnd = ph.end;
+      for (const ta of ph.accents) {
+        for (let i = Math.max(0, Math.floor((ta - 0.25) * CR)); i < Math.min(n, Math.ceil((ta + 0.25) * CR)); i++) {
+          const x = (i / CR - ta) / 0.075; f[i] *= 1 + 0.09 * Math.exp(-x * x);
+        }
+      }
+    }
+    for (let i = Math.floor(prevEnd * CR); i < n; i++) f[i] = prevVal;
+    // microvariação lenta e suavização
+    const r = C.rng(seed, "jitter"); let j = 0;
+    for (let i = 0; i < n; i++) { j = 0.985 * j + 0.015 * (r() * 2 - 1) * 6; f[i] *= 1 + voice.jitter * j; }
+    const g = new Float32Array(n);
+    for (let i = 0; i < n; i++) { let a = 0, c = 0; for (let k = -3; k <= 3; k++) { const q = i + k; if (q >= 0 && q < n) { a += f[q]; c++; } } g[i] = a / c; }
+    return g;
+  }
+
+  function rasterize(keys, nc) {
+    const out = new Float32Array(nc); let j = 0;
+    for (let c = 0; c < nc; c++) {
+      const t = c / CR;
+      while (j + 1 < keys.length && keys[j + 1][0] <= t) j++;
+      if (j + 1 >= keys.length) out[c] = keys[j][1];
+      else { const a = keys[j], b = keys[j + 1]; out[c] = b[0] === a[0] ? b[1] : a[1] + (b[1] - a[1]) * (t - a[0]) / (b[0] - a[0]); }
+    }
+    return out;
+  }
+
+  // ---------- síntese amostra a amostra ----------
+  function render(pl, voice, seed) {
+    const N = Math.ceil(pl.total * SR), nc = Math.ceil(pl.total * CR) + 2;
+    const tr = buildTracks(pl, voice), A = {};
+    for (const k in tr) A[k] = rasterize(tr[k], nc);
+    const f0 = buildF0(pl, voice, seed);
+    const rn = C.rng(seed, "noise");
+    const out = new Float32Array(N);
+    const R = []; for (let i = 0; i < 6; i++) R.push({ a: 0, b: 0, c: 0, y1: 0, y2: 0 });   // F1,F2,F3,F4,F5, fricção
+    const Z = { a: 1, b: 0, c: 0, x1: 0, x2: 0 };
+    const sc = voice.scale, tiltA = 1 - Math.exp(-2 * Math.PI * voice.tilt / SR);
+    const setRes = (r, f, bw) => { f = Math.min(Math.max(f, 50), SR * 0.45); bw = Math.max(bw, 20);
+      const c = -Math.exp(-2 * Math.PI * bw / SR), b = 2 * Math.exp(-Math.PI * bw / SR) * Math.cos(2 * Math.PI * f / SR); r.a = 1 - b - c; r.b = b; r.c = c; };
+    const setZero = (f, bw) => { f = Math.min(Math.max(f, 50), SR * 0.45);
+      const c = -Math.exp(-2 * Math.PI * bw / SR), b = 2 * Math.exp(-Math.PI * bw / SR) * Math.cos(2 * Math.PI * f / SR), a = 1 - b - c;
+      Z.a = 1 / a; Z.b = -b / a; Z.c = -c / a; };
+    let phase = 0, gPrev = 0, lp = 0, yPrev = 0, av = 0, ah = 0, af = 0, nz = 0, F0 = voice.f0;
+    const noise = () => (rn() + rn() + rn() - 1.5) * 1.15;
+    for (let n = 0; n < N; n++) {
+      const cpos = n * CR / SR, i0 = cpos | 0, fr = cpos - i0;
+      if ((n & 7) === 0) {
+        const g = a => a[i0] + (a[i0 + 1] - a[i0]) * fr;
+        av = g(A.av); ah = g(A.ah); af = g(A.af); nz = g(A.nz); F0 = g(f0);
+        setRes(R[0], g(A.f1), g(A.b1)); setRes(R[1], g(A.f2), g(A.b2)); setRes(R[2], g(A.f3), g(A.b3));
+        setRes(R[3], 3300 * sc, 250); setRes(R[4], 3750 * sc, 200); setRes(R[5], g(A.ff), g(A.fbw));
+        setZero(g(A.zf), 100);
+      }
+      // fonte glótica
+      phase += F0 / SR; if (phase >= 1) phase -= 1;
+      let src;
+      if (voice.saw) src = (2 * phase - 1) * 2.2;
+      else {
+        const oq = voice.oq, tp = oq * 0.7, tn = oq * 0.3; let gl;
+        if (phase < tp) gl = 0.5 * (1 - Math.cos(Math.PI * phase / tp));
+        else if (phase < tp + tn) gl = Math.cos(Math.PI * 0.5 * (phase - tp) / tn); else gl = 0;
+        src = (gl - gPrev) * (SR / F0) * 0.12; gPrev = gl;
+      }
+      lp += tiltA * (src - lp);
+      let x = av * lp + ah * noise();
+      // cascata
+      let y = R[0].a * x + R[0].b * R[0].y1 + R[0].c * R[0].y2; R[0].y2 = R[0].y1; R[0].y1 = y;
+      if (nz > 0.001) { const yz = Z.a * y + Z.b * Z.x1 + Z.c * Z.x2; Z.x2 = Z.x1; Z.x1 = y; y = (1 - nz) * y + nz * yz; } else { Z.x2 = Z.x1; Z.x1 = y; }
+      for (let k = 1; k < 5; k++) { const r = R[k]; const yy = r.a * y + r.b * r.y1 + r.c * r.y2; r.y2 = r.y1; r.y1 = yy; y = yy; }
+      const rad = y - 0.95 * yPrev; yPrev = y;
+      // fricção (ruído filtrado)
+      let fric = 0;
+      if (af > 0.0005) { const r = R[5]; const xn = noise() * af; fric = r.a * xn + r.b * r.y1 + r.c * r.y2; r.y2 = r.y1; r.y1 = fric; }
+      else { R[5].y2 = R[5].y1; R[5].y1 = 0; }
+      out[n] = rad + fric;
+    }
+    // normaliza o pico e aplica fade curto nas pontas
+    let mx = 0; for (let i = 0; i < N; i++) { const a = Math.abs(out[i]); if (a > mx) mx = a; }
+    const k = mx > 0 ? 0.9 / mx : 1, fade = Math.floor(SR * 0.008);
+    for (let i = 0; i < N; i++) { let v = out[i] * k; if (i < fade) v *= i / fade; if (N - i < fade) v *= (N - i) / fade; out[i] = v; }
+    return out;
+  }
+
+  function synthesize(items, voiceId, opts) {
+    opts = opts || {};
+    const voice = VOICES[voiceId] || VOICES.aria;
+    const pl = plan(items, voice, opts);
+    const samples = render(pl, voice, opts.seed || "0");
+    return { samples, sr: SR, duration: samples.length / SR, events: pl.events, plan: pl };
+  }
+
+  function wavBytes(samples, sr) {
+    const n = samples.length, buf = new ArrayBuffer(44 + n * 2), dv = new DataView(buf);
+    const w = (o, s) => { for (let i = 0; i < s.length; i++) dv.setUint8(o + i, s.charCodeAt(i)); };
+    w(0, "RIFF"); dv.setUint32(4, 36 + n * 2, true); w(8, "WAVEfmt "); dv.setUint32(16, 16, true); dv.setUint16(20, 1, true);
+    dv.setUint16(22, 1, true); dv.setUint32(24, sr, true); dv.setUint32(28, sr * 2, true); dv.setUint16(32, 2, true); dv.setUint16(34, 16, true);
+    w(36, "data"); dv.setUint32(40, n * 2, true);
+    for (let i = 0; i < n; i++) { const s = Math.max(-1, Math.min(1, samples[i])); dv.setInt16(44 + i * 2, s < 0 ? s * 0x8000 : s * 0x7fff, true); }
+    return new Uint8Array(buf);
+  }
+
+  const api = { VOICES, SR, G, DUR, synthesize, wavBytes, plan };
+  if (typeof module !== "undefined" && module.exports) module.exports = api; else root.Speech = api;
+})(typeof window !== "undefined" ? window : globalThis);
+
+</script>
+<script>
+(function(){
+'use strict';
+const E = Conlang, SP = Speech;
+const KEY = "ateliê-de-linguas-v2";
+const $ = id => document.getElementById(id);
+const esc = s => String(s).replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const STRESS_LABEL = { initial:"1ª sílaba", penult:"penúltima", final:"última" };
+let lang, sel = 0, lastWords = [], curTab = "idioma";
+
+/* ---------- utilidades ---------- */
+function toast(m){ const t=$('toast'); t.textContent=m; t.classList.add('on'); clearTimeout(toast.h); toast.h=setTimeout(()=>t.classList.remove('on'),4200); }
+function save(){ try{ localStorage.setItem(KEY, JSON.stringify(lang)); }catch(e){} }
+function saveFile(name, blob){
+  try{
+    const url = URL.createObjectURL(blob), a = document.createElement('a');
+    a.href = url; a.download = name; document.body.appendChild(a); a.click(); a.remove();
+    setTimeout(()=>URL.revokeObjectURL(url), 4000);
+    toast("Download iniciado. Se nada acontecer, este visualizador bloqueia downloads: abra o arquivo HTML do projeto no navegador.");
+  }catch(e){ toast("Não foi possível baixar aqui."); }
+}
+function glyphSvg(strokes){
+  return `<svg viewBox="0 0 100 100" fill="none" stroke="currentColor" stroke-width="${lang.style.stroke}" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="${E.glyphPath(strokes||[])}"/></svg>`;
+}
+const dl = i => E.digitLabel(lang, i);
+
+/* ---------- abas ---------- */
+document.querySelectorAll('nav.tabs button').forEach(b => b.addEventListener('click', () => showTab(b.dataset.tab)));
+function showTab(name){
+  curTab = name;
+  document.querySelectorAll('nav.tabs button').forEach(b => b.setAttribute('aria-selected', b.dataset.tab===name));
+  document.querySelectorAll('section.pane').forEach(p => p.hidden = p.id !== 'pane-'+name);
+  renderGrids();
+  if(name==='tradutor') runTranslate();
+}
+
+/* ---------- carregar idioma ---------- */
+function setLang(l){
+  lang = l; sel = 0;
+  $('langName').value = lang.name; $('seed').value = lang.seed;
+  $('baseNum').value = lang.base; $('baseRange').value = Math.min(128, lang.base);
+  $('stroke').value = lang.style.stroke; $('exact').checked = !!lang.options.exact;
+  renderVoices(); renderAll(); save();
+}
+function renderAll(){
+  renderPhon(); renderGrids(); renderPrimes(); renderEditor(); renderWarnings();
+  $('baseLbl').textContent = lang.base;
+  if(curTab==='tradutor') runTranslate();
+}
+
+/* ---------- gerar ---------- */
+$('baseNum').addEventListener('input', e => { $('baseRange').value = Math.min(128, +e.target.value || 2); });
+$('baseRange').addEventListener('input', e => { $('baseNum').value = e.target.value; });
+$('btnGen').addEventListener('click', () => {
+  const seed = $('seed').value.trim() || "410";
+  const base = E.clampBase($('baseNum').value);
+  const same = String(seed) === lang.seed;
+  const l = E.createLanguage(seed, base, {
+    name: same ? $('langName').value : ("Língua " + seed),
+    glyphs: same ? lang.glyphs : null, style: lang.style, voice: lang.voice, options: lang.options
+  });
+  setLang(l);
+  toast("Idioma gerado: seed " + seed + ", base " + base + ".");
+});
+$('langName').addEventListener('input', e => { lang.name = e.target.value; save(); });
+$('exact').addEventListener('change', e => { lang.options.exact = e.target.checked; save(); if(curTab==='tradutor') runTranslate(); });
+
+/* ---------- avisos de caracteres repetidos ---------- */
+function renderWarnings(){
+  const gi = E.glyphIssues(lang), parts = [];
+  let msg = "";
+  if(lang.base > E.PRESET_GLYPHS){
+    msg += `<p><b>Base acima de ${E.PRESET_GLYPHS}.</b> Só os ${E.PRESET_GLYPHS} primeiros dígitos têm caracteres sugeridos únicos. Do dígito ${E.PRESET_GLYPHS} em diante, os caracteres repetem os anteriores até você desenhar um novo para cada um na aba Alfabeto.</p>`;
+  }
+  if(gi.dupCount){
+    msg += `<p><b>${gi.dupCount} caractere${gi.dupCount>1?'s':''} repetido${gi.dupCount>1?'s':''}.</b> Enquanto houver desenhos iguais, a escrita fica ambígua: dois dígitos diferentes aparecem com o mesmo símbolo e um texto escrito não pode ser lido de volta com certeza. A fonética e o áudio não são afetados.</p>`;
+  }
+  if(gi.empties.length){
+    msg += `<p><b>${gi.empties.length} caractere${gi.empties.length>1?'s':''} sem desenho.</b> Eles não aparecem na escrita.</p>`;
+  }
+  for(const id of ['baseWarn','glyphWarn']){ const el=$(id); el.hidden = !msg; el.innerHTML = msg; }
+}
+
+/* ---------- fonologia ---------- */
+function renderPhon(){
+  const P = lang.phonology, byManner = {};
+  P.consonants.forEach(c => { const m=(E.CONSONANT_INFO[c]||["outras"])[0]; (byManner[m]=byManner[m]||[]).push(c); });
+  const order = ["oclusiva","nasal","fricativa","aproximante","outras"];
+  const hasCoda = P.pattern.endsWith("C");
+  const cGroups = order.filter(m=>byManner[m]).map(m =>
+    `<div class="group"><small>${m}${byManner[m].length>1?'s':''}</small><div class="chips">${byManner[m].map(c=>`<span class="chip${hasCoda&&P.codas.includes(c)?' coda':''}" title="${esc((E.CONSONANT_INFO[c]||[]).join(', '))}">${c}</span>`).join('')}</div></div>`).join('');
+  const vowels = P.vowels.map(v=>`<span class="chip" title="${esc((E.VOWEL_INFO[v]||[]).join(', '))}">${v}</span>`).join('');
+  $('phonPanel').innerHTML = `
+    <h2>Fonologia</h2>
+    <div class="stat"><div><b>${P.pattern}</b><span>Unidade por dígito</span></div><div><b>${P.consonants.length}</b><span>Consoantes</span></div><div><b>${P.vowels.length}</b><span>Vogais</span></div><div><b>${esc(STRESS_LABEL[P.stress]||P.stress)}</b><span>Acento</span></div></div>
+    <div class="group"><h3>Consoantes</h3>${cGroups}${hasCoda?'<small>Em destaque: consoantes que podem fechar a sílaba.</small>':''}</div>
+    <div class="group"><h3>Vogais</h3><div class="chips">${vowels}</div></div>
+    <p class="muted">Cada dígito usa uma unidade ${P.pattern} entre ${P.syllables.length} possíveis em uso. A sílaba tônica de cada palavra segue a regra acima.</p>`;
+}
+
+/* ---------- grades de dígitos (só a aba visível é desenhada) ---------- */
+function cellHTML(i, gi){
+  const dupOf = gi.dups[i], empty = !(lang.glyphs[i]||[]).length;
+  const cls = (i===sel?' on':'') + (dupOf!==undefined?' dup':'') + (empty?' empty':'');
+  const title = dupOf!==undefined ? `Dígito ${dl(i)}: igual ao dígito ${dl(dupOf)}. Desenhe um novo.` : empty ? `Dígito ${dl(i)}: sem desenho.` : `Dígito ${dl(i)}`;
+  return `<button type="button" class="cell${cls}" data-i="${i}" title="${esc(title)}"><span class="dg">${esc(dl(i))}</span>${dupOf!==undefined?`<span class="rep">= ${esc(dl(dupOf))}</span>`:''}${glyphSvg(lang.glyphs[i])}<span class="syl">${esc(lang.phonology.syllables[i])}</span></button>`;
+}
+function renderGrids(){
+  if(!lang) return;
+  const gi = E.glyphIssues(lang);
+  const target = curTab==='idioma' ? $('grid1') : curTab==='alfabeto' ? $('grid2') : null;
+  if(!target) return;
+  const keep = target.scrollTop;
+  target.innerHTML = Array.from({length:lang.base}, (_,i)=>cellHTML(i,gi)).join('');
+  target.scrollTop = keep;
+}
+$('grid1').addEventListener('click', e => { const c=e.target.closest('.cell'); if(!c) return; sel=+c.dataset.i; showTab('alfabeto'); renderEditor(); });
+$('grid2').addEventListener('click', e => { const c=e.target.closest('.cell'); if(!c) return; sel=+c.dataset.i; renderGrids(); renderEditor(); });
+
+function renderPrimes(){
+  const items = Object.keys(lang.primes).map(c => [c, lang.primes[c]]).sort((a,b)=>a[1]-b[1]);
+  $('primes').innerHTML = items.map(([c,p])=>`<span><b>${esc(c)}</b>${p}</span>`).join('');
+}
+
+/* ---------- editor de glifos ---------- */
+const pad = $('pad');
+let drawing = null;
+function padGuides(){
+  return `<line class="guide" x1="0" y1="50" x2="100" y2="50"/><line class="guide" x1="50" y1="0" x2="50" y2="100"/><rect class="guide d" x="12" y="12" width="76" height="76"/>`;
+}
+function renderEditor(){
+  const i = sel, g = lang.glyphs[i] || [];
+  $('edTitle').innerHTML = `Dígito <span class="ipa">${esc(dl(i))}</span> · unidade sonora <span class="ipa">${esc(lang.phonology.syllables[i])}</span>`;
+  pad.innerHTML = padGuides() + `<g fill="none" stroke="var(--fg)" stroke-width="${lang.style.stroke}" stroke-linecap="round" stroke-linejoin="round" id="padG"><path d="${E.glyphPath(g)}"/></g>`;
+  const gi = E.glyphIssues(lang), dupOf = gi.dups[i];
+  $('edHint').textContent = !g.length ? "Este caractere está vazio. Desenhe com o mouse ou o dedo; um toque simples faz um ponto."
+    : dupOf!==undefined ? `Igual ao dígito ${dl(dupOf)}. Desenhe por cima (limpe e refaça) para torná-lo único.`
+    : `${g.length} traço(s). Desenhe mais ou desfaça o último.`;
+}
+function padPoint(e){
+  const r = pad.getBoundingClientRect();
+  return [Math.max(0,Math.min(100,(e.clientX-r.left)/r.width*100)), Math.max(0,Math.min(100,(e.clientY-r.top)/r.height*100))];
+}
+function rdp(pts, tol){
+  if(pts.length<3) return pts;
+  const a=pts[0], b=pts[pts.length-1]; let md=0, mi=0;
+  const dx=b[0]-a[0], dy=b[1]-a[1], len=Math.hypot(dx,dy)||1e-9;
+  for(let i=1;i<pts.length-1;i++){
+    const d=Math.abs(dy*pts[i][0]-dx*pts[i][1]+b[0]*a[1]-b[1]*a[0])/len;
+    if(d>md){md=d;mi=i;}
+  }
+  if(md>tol){ const l=rdp(pts.slice(0,mi+1),tol), r=rdp(pts.slice(mi),tol); return l.slice(0,-1).concat(r); }
+  return [a,b];
+}
+pad.addEventListener('pointerdown', e => { e.preventDefault(); pad.setPointerCapture(e.pointerId); drawing = [padPoint(e)]; updateLive(); });
+pad.addEventListener('pointermove', e => {
+  if(!drawing) return;
+  const p = padPoint(e), l = drawing[drawing.length-1];
+  if(Math.hypot(p[0]-l[0], p[1]-l[1]) >= 1.6){ drawing.push(p); updateLive(); }
+});
+function endDraw(){
+  if(!drawing) return;
+  let s = drawing.length>2 ? rdp(drawing, 1.1) : drawing;
+  s = s.map(p=>[Math.round(p[0]*10)/10, Math.round(p[1]*10)/10]);
+  drawing = null;
+  lang.glyphs[sel] = (lang.glyphs[sel]||[]).concat([s]);
+  glyphChanged();
+}
+pad.addEventListener('pointerup', endDraw);
+pad.addEventListener('pointercancel', endDraw);
+function updateLive(){
+  const all = (lang.glyphs[sel]||[]).concat(drawing ? [drawing] : []);
+  const g = $('padG'); if(g) g.firstChild.setAttribute('d', E.glyphPath(all));
+}
+function glyphChanged(){ renderGrids(); renderEditor(); renderWarnings(); save(); if(curTab==='tradutor') runTranslate(); }
+$('edUndo').addEventListener('click', ()=>{ lang.glyphs[sel] = (lang.glyphs[sel]||[]).slice(0,-1); glyphChanged(); });
+$('edClear').addEventListener('click', ()=>{ lang.glyphs[sel] = []; glyphChanged(); });
+$('edReset').addEventListener('click', ()=>{ lang.glyphs[sel] = E.defaultGlyphs(lang.seed, lang.base)[sel]; glyphChanged(); });
+$('edPrev').addEventListener('click', ()=>{ sel=(sel-1+lang.base)%lang.base; renderGrids(); renderEditor(); });
+$('edNext').addEventListener('click', ()=>{ sel=(sel+1)%lang.base; renderGrids(); renderEditor(); });
+$('edIssue').addEventListener('click', ()=>{
+  const gi = E.glyphIssues(lang), bad = Object.keys(gi.dups).map(Number).concat(gi.empties).sort((a,b)=>a-b);
+  if(!bad.length){ toast("Nenhum caractere repetido ou vazio."); return; }
+  sel = bad.find(i=>i>sel) ?? bad[0]; renderGrids(); renderEditor();
+  const c = $('grid2').querySelector('.cell.on'); if(c) c.scrollIntoView({block:'nearest'});
+});
+$('stroke').addEventListener('input', e => { lang.style.stroke = +e.target.value; renderGrids(); renderEditor(); save(); if(curTab==='tradutor') runTranslate(); });
+
+/* ---------- tradutor ---------- */
+const modeVal = () => document.querySelector('input[name=mode]:checked').value;
+const LABELS = { tx:"Texto", ph:"Fonética (palavras separadas por espaço; pontos e acentos são opcionais)", dg:"Dígitos da base (palavras separadas por espaço" + "; acima da base 62, dígitos separados por hífen)" };
+function wordsToSrc(words, field){
+  let out = "";
+  for(const w of words){ if(w.kind==='nl'){ out += "\n"; continue; } out += (out===""||out.endsWith("\n") ? "" : " ") + w[field]; }
+  return out;
+}
+document.querySelectorAll('input[name=mode]').forEach(r => r.addEventListener('change', () => {
+  $('srcLabel').textContent = LABELS[modeVal()];
+  if(modeVal()==='ph') $('src').value = wordsToSrc(lastWords,'ipa');
+  else if(modeVal()==='dg') $('src').value = wordsToSrc(lastWords,'digitStr');
+  runTranslate();
+}));
+$('src').addEventListener('input', runTranslate);
+$('gsize').addEventListener('input', renderScript);
+
+function runTranslate(){
+  const mode = modeVal(), src = $('src').value;
+  let text = src, errs = [];
+  if(mode !== 'tx'){
+    const r = mode==='ph' ? E.decodePhoneticText(lang, src) : E.decodeDigitText(lang, src);
+    text = r.text; errs = r.errors;
+  }
+  const enc = E.encodeText(lang, text);
+  lastWords = enc.words;
+  $('decodedBox').hidden = mode==='tx';
+  $('decodedText').textContent = text;
+  $('decodeErr').textContent = errs.length ? "Não foi possível decodificar: " + errs.slice(0,6).join(", ") + (errs.length>6?"…":"") : "";
+  const sk = $('skipNote'); sk.hidden = !enc.skipped || mode!=='tx';
+  if(enc.skipped) sk.textContent = enc.skipped + " caractere(s) sem equivalente foram ignorados (emojis, símbolos fora da tabela).";
+  const gi = E.glyphIssues(lang), sw = $('scriptWarn');
+  sw.hidden = !(gi.dupCount || gi.empties.length);
+  if(!sw.hidden) sw.textContent = "Há caracteres repetidos ou vazios no alfabeto: esta escrita pode ser ambígua. Veja a aba Alfabeto.";
+  renderScript();
+  $('ipaOut').innerHTML = enc.words.map(w => w.kind==='nl' ? '<br>' : w.kind==='punct' ? `<span class="pun" title="Pontuação: vira pausa na fala">${esc(w.ipa)}</span>` : `<span>${esc(w.ipa)}</span>`).join('');
+  $('ipaLegend').textContent = `Os pontos separam sílabas e ˈ marca a sílaba tônica (regra desta língua: ${STRESS_LABEL[lang.phonology.stress]}). Eles só existem na escrita fonética: o áudio não os usa. Pontuação em cinza vira pausa.`;
+  $('digitsOut').textContent = wordsToSrc(enc.words,'digitStr').replace(/ /g,"  ");
+  $('anat').innerHTML = enc.words.filter(w=>w.kind!=='nl').slice(0,60).map(w => {
+    const n = E.wordToNumber(lang, w.token).toString();
+    return `<tr class="${w.kind==='punct'?'punrow':''}"><td>${esc(w.token)}</td><td class="num">${n.length>26?n.slice(0,24)+"…":n}</td><td class="num">${esc(w.digitStr)}</td><td class="ipa">${esc(w.ipa)}</td></tr>`;
+  }).join('') + (enc.words.length>60 ? `<tr><td colspan="4" class="muted">… e mais ${enc.words.length-60} itens</td></tr>` : "");
+}
+function renderScript(){
+  const box = $('scriptBox');
+  if(!lastWords.length){ box.innerHTML = '<span class="muted">Digite um texto para ver a escrita.</span>'; return; }
+  box.innerHTML = E.scriptSVG(lang, lastWords, +$('gsize').value, Math.max(200, box.clientWidth - 30), "currentColor");
+}
+$('btnSvg').addEventListener('click', () => {
+  if(!lastWords.length) return;
+  const svg = E.scriptSVG(lang, lastWords, +$('gsize').value, 1000, "#111111");
+  saveFile((lang.name||"idioma").replace(/\W+/g,"_")+".svg", new Blob([svg], {type:"image/svg+xml"}));
+});
+window.addEventListener('resize', ()=>{ if(curTab==='tradutor') renderScript(); });
+
+/* ---------- vozes ---------- */
+function renderVoices(){
+  const s = $('voice'); const cur = lang && lang.voice ? lang.voice.id : "aria";
+  let h = '<optgroup label="Vozes do idioma">' + Object.keys(SP.VOICES).map(k=>`<option value="${k}">${esc(SP.VOICES[k].label)}</option>`).join('') + '</optgroup>';
+  let bv = [];
+  try{ bv = window.speechSynthesis ? speechSynthesis.getVoices() : []; }catch(e){}
+  if(bv.length) h += '<optgroup label="Voz do navegador (aproximada)">' + bv.map(v=>`<option value="tts:${esc(v.name)}">${esc(v.name)} (${esc(v.lang)})</option>`).join('') + '</optgroup>';
+  s.innerHTML = h;
+  s.value = Array.from(s.options).some(o=>o.value===cur) ? cur : "aria";
+}
+try{ if(window.speechSynthesis) speechSynthesis.onvoiceschanged = ()=>{ if(lang) renderVoices(); }; }catch(e){}
+$('voice').addEventListener('change', e => { lang.voice.id = e.target.value; save(); });
+
+/* ---------- reprodução ---------- */
+let actx = null, curSrc = null, cache = {key:null, res:null};
+const RESPELL = {a:"ah",e:"eh",i:"ee",o:"oh",u:"oo","æ":"a","ɪ":"ih","ʊ":"u","ə":"uh","ʃ":"sh","ʒ":"zh","ŋ":"ng",j:"y"};
+const respell = s => [...s].map(c => RESPELL[c] || c).join('');
+function stopAudio(){
+  try{ if(curSrc){ curSrc.onended=null; curSrc.stop(); } }catch(e){} curSrc = null;
+  try{ if(window.speechSynthesis) speechSynthesis.cancel(); }catch(e){}
+}
+function getSynth(){
+  const vid = $('voice').value, tempo = +$('tempo').value;
+  const key = [vid, tempo, lang.seed, lastWords.map(w=>w.kind+w.ipa).join('|')].join('#');
+  if(cache.key===key) return cache.res;
+  const res = SP.synthesize(lastWords, vid, {rate: tempo, seed: lang.seed});
+  cache = {key, res}; return res;
+}
+$('btnStop').addEventListener('click', stopAudio);
+$('btnPlay').addEventListener('click', () => {
+  if(!lastWords.some(w=>w.kind==='word')){ toast("Escreva algum texto primeiro."); return; }
+  stopAudio();
+  const vid = $('voice').value;
+  if(vid.startsWith('tts:')){
+    try{
+      const spoken = lastWords.map(w => {
+        if(w.kind==='nl') return ".";
+        if(w.kind==='punct'){ if(/^[,;:]$/.test(w.token)) return ","; if(/^[.!?]$/.test(w.token)) return w.token; return ""; }
+        return respell(w.sylls.join(''));
+      }).filter(Boolean).join(" ");
+      const u = new SpeechSynthesisUtterance(spoken);
+      const vo = speechSynthesis.getVoices().find(x => 'tts:'+x.name === vid); if(vo){ u.voice = vo; u.lang = vo.lang; }
+      u.rate = .85 * (+$('tempo').value); speechSynthesis.speak(u);
+    }catch(e){ toast("Voz do navegador indisponível aqui."); }
+    return;
+  }
+  const btn = $('btnPlay'); btn.disabled = true; btn.textContent = "Gerando voz…";
+  setTimeout(async () => {
+    try{
+      const r = getSynth();
+      actx = actx || new (window.AudioContext || window.webkitAudioContext)();
+      if(actx.state==='suspended') await actx.resume();
+      const buf = actx.createBuffer(1, r.samples.length, r.sr); buf.copyToChannel(r.samples, 0);
+      const src = actx.createBufferSource(); src.buffer = buf; src.connect(actx.destination);
+      src.onended = () => { if(curSrc===src) curSrc=null; };
+      curSrc = src; src.start();
+      if(r.duration >= 89) toast("Texto longo: o áudio foi limitado a 90 segundos.");
+    }catch(e){ toast("Não foi possível gerar o áudio neste navegador."); }
+    btn.disabled = false; btn.textContent = "Ouvir";
+  }, 20);
+});
+$('btnWav').addEventListener('click', () => {
+  if(!lastWords.some(w=>w.kind==='word')){ toast("Escreva algum texto primeiro."); return; }
+  if($('voice').value.startsWith('tts:')){ toast("Escolha uma voz do idioma para gerar o arquivo de áudio."); return; }
+  const r = getSynth();
+  saveFile((lang.name||"idioma").replace(/\W+/g,"_")+".wav", new Blob([SP.wavBytes(r.samples, r.sr)], {type:'audio/wav'}));
+});
+
+/* ---------- arquivo do idioma ---------- */
+$('btnFile').addEventListener('click', () => { $('jsonOut').value = JSON.stringify(lang); $('importErr').textContent=""; $('fileDlg').hidden = false; });
+$('fileClose').addEventListener('click', () => { $('fileDlg').hidden = true; });
+$('fileDlg').addEventListener('click', e => { if(e.target===$('fileDlg')) $('fileDlg').hidden = true; });
+document.addEventListener('keydown', e => { if(e.key==='Escape') $('fileDlg').hidden = true; });
+$('btnDlJson').addEventListener('click', () => saveFile((lang.name||"idioma").replace(/\W+/g,"_")+".lingua.json", new Blob([JSON.stringify(lang,null,1)], {type:"application/json"})));
+$('btnCopyJson').addEventListener('click', async () => {
+  const ta = $('jsonOut');
+  try{ await navigator.clipboard.writeText(ta.value); toast("JSON copiado."); }
+  catch(e){ ta.focus(); ta.select(); try{ document.execCommand('copy'); toast("JSON copiado."); }catch(_){ toast("Selecione o texto e copie manualmente."); } }
+});
+function importText(txt){
+  try{ const l = E.validateLanguage(JSON.parse(txt)); setLang(l); $('fileDlg').hidden = true; toast("Idioma carregado: " + l.name); }
+  catch(e){ $('importErr').textContent = "Não foi possível carregar: " + e.message; }
+}
+$('fileIn').addEventListener('change', e => {
+  const f = e.target.files[0]; if(!f) return;
+  const r = new FileReader(); r.onload = () => importText(String(r.result)); r.readAsText(f);
+});
+$('btnLoadJson').addEventListener('click', () => importText($('jsonIn').value));
+
+/* ---------- início ---------- */
+let start = null;
+try{ const raw = localStorage.getItem(KEY); if(raw) start = E.validateLanguage(JSON.parse(raw)); }catch(e){ start = null; }
+$('srcLabel').textContent = LABELS.tx;
+setLang(start || E.createLanguage("fazedor de biz", 26, {name:"Fazedor de biz"}));
+})();
+</script>
